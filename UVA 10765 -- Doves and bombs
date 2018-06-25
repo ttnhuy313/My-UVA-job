@@ -1,0 +1,71 @@
+///  25/06/2018
+/// Author : Nhat Huy dep zai :p
+#include <bits/stdc++.h>
+using namespace std;
+#define fi first
+#define se second
+#define mp make_pair
+#define pb push_back
+#define REP(i,n) for (int i = 0; i < n; ++ i)
+#define FOR(i,a,b) for (int i = a; i <= b; ++ i)
+#define FORD(i,b,a) for (int i = b; i >= a; -- i)
+#define task "doves"
+#define opfin(task) freopen( task".inp", "r", stdin )
+#define opfout(task) freopen(task".out", "w", stdout)
+#define ms(a) memset(a, 0, sizeof(a))
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> ii;
+typedef pair<ll, int> li;
+typedef vector<int> vi;
+typedef vector <ii> vii;
+const int N = 1e4+5;
+vi adj[N];
+int num[N], arti[N], low[N], n, m, dfscounter, root;
+vii res;
+void dfs(int u, int par) {
+    num[u] = low[u] = dfscounter++;
+    int child = 0;
+    REP(i, adj[u].size()) {
+        int v = adj[u][i];
+        if (v == par) continue;
+        if (num[v] == 0) {
+            child++;
+            dfs(v, u);
+            if (low[v] >= num[u] && u != root) arti[u]++;
+            if (root == u && child > 1) arti[root]++;
+            low[u] = min(low[u], low[v]);
+        }
+        else low[u] = min(low[u], num[v]);
+    }
+    //cout << "Vertex " << u << " have " << arti[u] + 1 << " children " << " with low is " << low[u] << " and num is " << num[u] << endl;
+}
+bool cmp(ii a, ii b) {
+    if (a.second == b.second) return (a.first < b.first);
+    return (a.second > b.second);
+}
+int main() {
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    //opfin(task);
+    //opfout(task);
+    while (cin >> n >> m && n && m) {
+        res.clear();
+        ms(num); ms(low); ms(arti); dfscounter = 1;
+        REP(i,n) adj[i].clear();
+        int u, v;
+        while (cin >> u >> v && u != -1 && v != -1 ) {
+            adj[u].pb(v);
+            adj[v].pb(u);
+        }
+        REP(i, n)
+            if (num[i] == 0) {
+                    root = i;
+                    dfs(i, -1);
+            }
+        REP(i, n) res.pb(ii(i, arti[i] + 1));
+        sort(res.begin(), res.end(), cmp);
+        REP(i, m) cout << res[i].first << ' ' << res[i].second << endl;
+        cout << endl;
+    }
+}
+
